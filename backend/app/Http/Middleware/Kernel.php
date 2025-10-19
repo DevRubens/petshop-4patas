@@ -1,0 +1,1 @@
+'role' => \App\Http\Middleware\EnsureRole::class,
