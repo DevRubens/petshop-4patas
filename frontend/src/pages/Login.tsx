@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../stores/auth";
 
 export default function Login() {
   const nav = useNavigate();
@@ -7,16 +8,28 @@ export default function Login() {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const login = useAuthStore((state) => state.login);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErro(null);
     setLoading(true);
     try {
-      // TODO: integrar com sua API real
-      if (!email || !senha) throw new Error("Preencha email e senha.");
-      // sucesso -> nav("/dashboard");
-      console.log("Login funcionário:", { email, senha });
+      const result = await login(email, senha);
+
+      if (!result.ok) {
+        switch (result.reason) {
+          case "credentials":
+            throw new Error("Email ou senha inválidos.");
+          case "network":
+            throw new Error("Falha de rede. Tente novamente.");
+          case "no-token":
+            throw new Error("Resposta inválida da API.");
+          default:
+            throw new Error("Não foi possível entrar. Tente novamente.");
+        }
+      }
+      nav("/dashboard");
     } catch (err: any) {
       setErro(err?.message ?? "Falha ao entrar");
     } finally {

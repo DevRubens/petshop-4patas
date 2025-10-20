@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthStore } from "../stores/auth";
 
 export default function AdminLogin() {
   const nav = useNavigate();
@@ -7,16 +8,31 @@ export default function AdminLogin() {
   const [senha, setSenha] = useState("");
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
+  const login = useAuthStore((state) => state.login);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setErro(null);
     setLoading(true);
     try {
-      // TODO: integrar com sua API /admin/login
-      if (!email || !senha) throw new Error("Preencha email e senha.");
-      console.log("Login admin:", { email, senha });
-      // nav("/admin/dashboard");
+      const result = await login(email, senha, true);
+
+      if (!result.ok) {
+        switch (result.reason) {
+          case "credentials":
+            throw new Error("Email ou senha inválidos.");
+          case "network":
+            throw new Error("Falha de rede. Tente novamente.");
+          case "no-token":
+            throw new Error("Resposta inválida da API.");
+          case "http-403":
+            throw new Error("Acesso negado.");
+          default:
+            throw new Error("Não foi possível entrar. Tente novamente.");
+        }
+      }
+
+      nav("/admin/dashboard");
     } catch (err: any) {
       setErro(err?.message ?? "Falha ao entrar");
     } finally {
