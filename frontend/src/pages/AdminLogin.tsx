@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function Login() {
+export default function AdminLogin() {
   const nav = useNavigate();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -13,10 +13,10 @@ export default function Login() {
     setErro(null);
     setLoading(true);
     try {
-      // TODO: integrar com sua API real
+      // TODO: integrar com sua API /admin/login
       if (!email || !senha) throw new Error("Preencha email e senha.");
-      // sucesso -> nav("/dashboard");
-      console.log("Login funcionário:", { email, senha });
+      console.log("Login admin:", { email, senha });
+      // nav("/admin/dashboard");
     } catch (err: any) {
       setErro(err?.message ?? "Falha ao entrar");
     } finally {
@@ -39,7 +39,7 @@ export default function Login() {
           <input
             className="login-input"
             type="email"
-            placeholder="seuemail@exemplo.com"
+            placeholder="admin@4patas.local"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -66,12 +66,12 @@ export default function Login() {
 
         <div className="login-actions">
           <button
-            className="login-btn admin"
+            className="login-btn ghost"
             type="button"
-            onClick={() => nav("/admin")}
-            title="Acesso do administrador"
+            onClick={() => nav("/")}
+            title="Voltar ao login"
           >
-            Acesso do administrador
+            Voltar ao login
           </button>
         </div>
       </div>
