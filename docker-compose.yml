@@ -1,4 +1,35 @@
 services:
+  frontend:
+    image: node:20-alpine
+    container_name: petshop_frontend
+    working_dir: /usr/src/app
+    restart: unless-stopped
+    environment:
+      - VITE_API_URL=http://localhost:${WEB_PORT}/api
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+    ports:
+      - "${FRONTEND_PORT}:5173"
+    volumes:
+      - ./frontend:/usr/src/app
+      - frontend_node_modules:/usr/src/app/node_modules
+    command: >
+      sh -lc '
+        if [ ! -f package.json ]; then
+          echo "[frontend] Nenhum package.json encontrado em /usr/src/app";
+          echo "Crie a pasta ./frontend com os arquivos do projeto React.";
+          sleep 10; exit 1;
+        fi;
+        if [ ! -x node_modules/.bin/vite ]; then
+          echo "[frontend] Instalando dependências...";
+          npm ci || npm i;
+        fi;
+        exec npm run dev -- --host 0.0.0.0 --port 5173
+      '
+    depends_on:
+      - web
+
   db:
     image: mariadb:11.4
     container_name: mariadb_petshop4patas
@@ -75,3 +106,4 @@ services:
 
 volumes:
   mariadbdata:
+  frontend_node_modules:
