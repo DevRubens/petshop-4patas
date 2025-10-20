@@ -8,13 +8,18 @@ use App\Http\Controllers\VendasController;
 use App\Http\Controllers\CaixaController;
 use App\Http\Controllers\DivergenciasController;
 
-
 Route::get('/health', fn() => response()->json(['ok' => true]));
 
 Route::post('/auth/funcionario/login', [AuthController::class, 'loginFuncionario']);
 Route::post('/auth/admin/login', [AuthController::class, 'loginAdmin']);
 
+Route::post('/auth/admin/register', [AuthController::class, 'registerAdmin']);
+
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post('/auth/funcionario/register', [AuthController::class, 'registerFuncionario'])
+        ->middleware('role:ADMIN');
+
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
 
@@ -28,8 +33,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/relatorios/vendas/dia', [VendasController::class, 'doDia']);
     Route::get('/relatorios/vendas/por-funcionario', [VendasController::class, 'porFuncionario'])->middleware('role:ADMIN');
-    Route::post('/vendas', [VendasController::class, 'store']);
 
+    Route::post('/vendas', [VendasController::class, 'store']);
     Route::post('/caixa/abrir', [CaixaController::class, 'abrir']);
     Route::post('/caixa/fechar', [CaixaController::class, 'fechar']);
 
