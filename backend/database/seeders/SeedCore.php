@@ -11,25 +11,38 @@ class SeedCore extends Seeder
 {
     public function run(): void
     {
-        DB::table('app_usuarios')->insertOrIgnore([
+        foreach (
             [
-                'id' => (string) Str::uuid(),
-                'nome' => 'Admin 4Patas',
-                'email' => 'admin@petshop4patas.local',
-                'senha_hash' => Hash::make('Adm4Patas!2025'),
-                'role' => 'ADMIN',
-                'ativo' => 1,
-            ],
-            [
-                'id' => (string) Str::uuid(),
-                'nome' => 'Funcionário 1',
-                'email' => 'func1@petshop4patas.local',
-                'senha_hash' => Hash::make('Func4Patas!2025'),
-                'role' => 'FUNCIONARIO',
-                'ativo' => 1,
-            ],
-        ]);
+                [
+                    'nome' => 'Admin 4Patas',
+                    'email' => 'admin@petshop4patas.local',
+                    'senha_hash' => Hash::make('Adm4Patas!2025'),
+                    'senha' => 'admin123',
+                    'role' => 'ADMIN',
+                ],
+                [
+                    'nome' => 'Funcionário 1',
+                    'email' => 'func1@petshop4patas.local',
+                    'senha' => 'Func4Patas!2025',
+                    'role' => 'FUNCIONARIO',
+                ],
+            ] as $usuarioBase
+        ) {
+            $existingId = DB::table('app_usuarios')
+                ->where('email', $usuarioBase['email'])
+                ->value('id');
 
+            DB::table('app_usuarios')->updateOrInsert(
+                ['email' => $usuarioBase['email']],
+                [
+                    'id' => $existingId ?? (string) Str::uuid(),
+                    'nome' => $usuarioBase['nome'],
+                    'senha_hash' => Hash::make($usuarioBase['senha']),
+                    'role' => $usuarioBase['role'],
+                    'ativo' => 1,
+                ]
+            );
+        }
         $clienteComum = (string) Str::uuid();
         $clienteEspecial = (string) Str::uuid();
 
