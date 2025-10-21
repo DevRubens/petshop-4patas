@@ -13,6 +13,7 @@ class Usuario extends Authenticatable
     protected $table = 'app_usuarios';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = [
         'nome',

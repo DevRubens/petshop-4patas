@@ -1,0 +1,23 @@
+<svg width="360" height="360" viewBox="0 0 360 360" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="pack" x1="40" y1="40" x2="320" y2="320" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7DC9A8" />
+      <stop offset="1" stop-color="#4A9F7C" />
+    </linearGradient>
+    <linearGradient id="label" x1="90" y1="120" x2="270" y2="260" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F7FAF8" />
+      <stop offset="1" stop-color="#D9ECE2" />
+    </linearGradient>
+  </defs>
+  <rect width="360" height="360" rx="48" fill="#F1F8F4" />
+  <rect x="60" y="60" width="240" height="240" rx="32" fill="url(#pack)" />
+  <rect x="90" y="110" width="180" height="140" rx="20" fill="url(#label)" />
+  <g fill="#2F5742">
+    <path d="M180 150c-18 0-32 14-32 32s14 32 32 32 32-14 32-32-14-32-32-32zm0 52c-11 0-20-9-20-20s9-20 20-20 20 9 20 20-9 20-20 20z"/>
+    <path d="M124 220h112c6 0 10 4 10 10s-4 10-10 10H124c-6 0-10-4-10-10s4-10 10-10z"/>
+  </g>
+  <circle cx="124" cy="136" r="12" fill="#FBE8A6" />
+  <circle cx="236" cy="136" r="12" fill="#FBE8A6" />
+  <path d="M180 96c-22 0-40 16-40 36 0 6 2 12 5 17h70c3-5 5-11 5-17 0-20-18-36-40-36z" fill="#2F5742" opacity="0.25" />
+  <text x="180" y="300" text-anchor="middle" font-family="'Poppins', 'Segoe UI', sans-serif" font-size="26" fill="#2F5742" font-weight="600">Oferta especial</text>
+</svg>

@@ -12,6 +12,7 @@ class Cliente extends Model
     protected $table = 'app_clientes';
     public $incrementing = false;
     protected $keyType = 'string';
+    public $timestamps = false;
 
     protected $fillable = ['nome', 'telefone', 'endereco', 'referencia', 'especial'];
 }

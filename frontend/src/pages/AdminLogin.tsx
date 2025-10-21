@@ -84,7 +84,7 @@ export default function AdminLogin() {
           <button
             className="login-btn ghost"
             type="button"
-            onClick={() => nav("/")}
+            onClick={() => nav("/login")}
             title="Voltar ao login"
           >
             Voltar ao login

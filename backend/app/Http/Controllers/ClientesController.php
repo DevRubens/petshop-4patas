@@ -12,8 +12,11 @@ class ClientesController extends Controller
     {
         $q = Cliente::query();
         if ($s = $req->query('s')) {
-            $q->where('nome', 'like', "%$s%")
-                ->orWhere('telefone', 'like', "%$s%");
+            $q->where(function ($w) use ($s) {
+                $w->where('nome', 'like', "%$s%")
+                  ->orWhere('telefone', 'like', "%$s%")
+                  ->orWhere('endereco', 'like', "%$s%");
+            });
         }
         return $q->orderBy('nome')->paginate(50);
     }
@@ -58,5 +61,13 @@ class ClientesController extends Controller
             'cliente_id' => $id,
             'saldo_aberto' => $row?->saldo_aberto ?? 0
         ]);
+    }
+
+    public function destroy($id)
+    {
+        $c = Cliente::find($id);
+        if (!$c) return response()->json(['message' => 'Cliente não encontrado'], 404);
+        $c->delete();
+        return response()->json(['message' => 'Cliente excluído']);
     }
 }

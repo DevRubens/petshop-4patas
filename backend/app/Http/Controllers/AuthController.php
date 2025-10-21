@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Http\Controllers;
 
@@ -20,11 +20,11 @@ class AuthController extends Controller
             ->first();
 
         if (!$user || $user->role !== $role) {
-            return response()->json(['message' => 'Credenciais inválidas'], 401);
+            return response()->json(['message' => 'Credenciais invÃ¡lidas'], 401);
         }
 
         if (!Hash::check($data['senha'], $user->senha_hash)) {
-            return response()->json(['message' => 'Credenciais inválidas'], 401);
+            return response()->json(['message' => 'Credenciais invÃ¡lidas'], 401);
         }
 
         $token = $user->createToken('api')->plainTextToken;
@@ -36,6 +36,8 @@ class AuthController extends Controller
                 'name'  => $user->nome,
                 'email' => $user->email,
                 'role'  => $user->role,
+                'photo' => $user->foto_url,
+                'ativo' => $user->ativo,
             ],
         ]);
     }
@@ -70,13 +72,14 @@ class AuthController extends Controller
         $user->save();
 
         return response()->json([
-            'message' => 'Funcionário cadastrado com sucesso',
+            'message' => 'FuncionÃ¡rio cadastrado com sucesso',
             'usuario' => [
                 'id'    => $user->id,
                 'name'  => $user->nome,
                 'email' => $user->email,
                 'role'  => $user->role,
                 'ativo' => $user->ativo,
+                'photo' => $user->foto_url,
             ],
         ], 201);
     }
@@ -117,6 +120,7 @@ class AuthController extends Controller
                 'email' => $user->email,
                 'role'  => $user->role,
                 'ativo' => $user->ativo,
+                'photo' => $user->foto_url,
             ],
         ], 201);
     }
@@ -129,7 +133,115 @@ class AuthController extends Controller
             'name'  => $u->nome,
             'email' => $u->email,
             'role'  => $u->role,
+            'photo' => $u->foto_url,
+            'ativo' => $u->ativo,
         ]) : response()->json(null, 401);
+    }
+
+    public function listFuncionarios(Request $req)
+    {
+        $req->user(); // ensures auth
+
+        $funcionarios = Usuario::where('role', 'FUNCIONARIO')
+            ->orderBy('nome')
+            ->get(['id', 'nome', 'email', 'foto_url', 'ativo', 'criado_em']);
+
+        return response()->json([
+            'funcionarios' => $funcionarios->map(function ($u) {
+                return [
+                    'id'       => $u->id,
+                    'name'     => $u->nome,
+                    'email'    => $u->email,
+                    'photo'    => $u->foto_url,
+                    'ativo'    => (bool) $u->ativo,
+                    'created'  => $u->criado_em,
+                ];
+            }),
+        ]);
+    }
+
+    public function updateAdminPassword(Request $req)
+    {
+        $user = $req->user();
+
+        $data = $req->validate([
+            'senha_atual'           => 'required|string',
+            'nova_senha'            => 'required|string|min:6|confirmed',
+        ]);
+
+        if (!Hash::check($data['senha_atual'], $user->senha_hash)) {
+            return response()->json([
+                'message' => 'Senha atual invÃ¡lida',
+            ], 422);
+        }
+
+        $user->senha_hash = Hash::make($data['nova_senha']);
+        $user->save();
+
+        return response()->json([
+            'message' => 'Senha atualizada com sucesso',
+        ]);
+    }
+
+    public function updateFuncionarioPassword(Request $req, string $id)
+    {
+        $data = $req->validate([
+            'nova_senha' => 'required|string|min:6|confirmed',
+        ]);
+
+        $funcionario = Usuario::where('id', $id)
+            ->where('role', 'FUNCIONARIO')
+            ->first();
+
+        if (!$funcionario) {
+            return response()->json([
+                'message' => 'FuncionÃ¡rio nÃ£o encontrado',
+            ], 404);
+        }
+
+        $funcionario->senha_hash = Hash::make($data['nova_senha']);
+        $funcionario->save();
+
+        return response()->json([
+            'message' => 'Senha do funcionÃ¡rio atualizada',
+            'usuario' => [
+                'id'    => $funcionario->id,
+                'name'  => $funcionario->nome,
+                'email' => $funcionario->email,
+                'photo' => $funcionario->foto_url,
+                'ativo' => $funcionario->ativo,
+            ],
+        ]);
+    }
+
+    public function updateMinhaFoto(Request $req)
+    {
+        $user = $req->user();
+        $data = $req->validate([
+            'foto_url' => 'nullable|string|max:2048',
+        ]);
+        $user->foto_url = $data['foto_url'] ?? null;
+        $user->save();
+        return response()->json(['message' => 'Foto atualizada', 'url' => $user->foto_url]);
+    }
+
+    public function updateUsuarioFoto(Request $req, string $id)
+    {
+        $data = $req->validate(['foto_url' => 'nullable|string|max:2048']);
+        $u = Usuario::find($id);
+        if (!$u) return response()->json(['message' => 'UsuÃ¡rio nÃ£o encontrado'], 404);
+        $u->foto_url = $data['foto_url'] ?? null;
+        $u->save();
+        return response()->json(['message' => 'Foto atualizada', 'url' => $u->foto_url]);
+    }
+
+    public function deleteFuncionario(Request $req, string $id)
+    {
+        $f = Usuario::where('id', $id)->where('role', 'FUNCIONARIO')->first();
+        if (!$f) return response()->json(['message' => 'FuncionÃ¡rio nÃ£o encontrado'], 404);
+
+        $f->delete();
+        return response()->json(['message' => 'FuncionÃ¡rio excluÃ­do']);
     }
 
     public function logout(Request $req)
@@ -138,3 +250,6 @@ class AuthController extends Controller
         return response()->json(['message' => 'ok']);
     }
 }
+
+
+

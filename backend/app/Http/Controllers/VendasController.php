@@ -41,6 +41,37 @@ class VendasController extends Controller
         return response()->json($rows);
     }
 
+    public function doDiaDetalhado(\Illuminate\Http\Request $req)
+    {
+        $q = DB::table('app_vendas as v')
+            ->leftJoin('app_clientes as c', 'c.id', '=', 'v.cliente_id')
+            ->join('app_venda_itens as i', 'i.venda_id', '=', 'v.id')
+            ->join('app_produtos as p', 'p.id', '=', 'i.produto_id')
+            ->whereRaw('DATE(v.data_hora) = CURDATE()');
+
+        if ($req->filled('q')) {
+            $s = '%' . $req->query('q') . '%';
+            $q->where(function ($w) use ($s) {
+                $w->where('c.nome', 'like', $s)
+                    ->orWhere('c.telefone', 'like', $s)
+                    ->orWhere('c.endereco', 'like', $s);
+            });
+        }
+        if ($req->filled('pagamento')) {
+            $q->where('v.tipo_pagamento', $req->query('pagamento'));
+        }
+
+        $rows = $q->select([
+                'v.id', 'v.data_hora', 'v.total', 'v.tipo_pagamento',
+                'c.nome as cliente_nome', 'c.telefone', 'c.endereco',
+                DB::raw("GROUP_CONCAT(CONCAT(p.nome,' x',i.quantidade) SEPARATOR '; ') as itens")
+            ])
+            ->groupBy('v.id', 'v.data_hora', 'v.total', 'v.tipo_pagamento', 'c.nome', 'c.telefone', 'c.endereco')
+            ->orderByDesc('v.data_hora')
+            ->get();
+
+        return response()->json($rows);
+    }
     public function store(Request $req)
     {
         $data = $req->validate([

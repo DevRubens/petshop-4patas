@@ -7,5 +7,10 @@
 }
 
 body {
-  @apply bg-gray-50 text-gray-900;
+  @apply bg-[#eaf3ee] text-[#2f4d3f];
+  font-family: "Poppins", "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+.sidebar-gradient {
+  background: linear-gradient(180deg, #335d49 0%, #2f5742 45%, #3d7056 100%);
 }

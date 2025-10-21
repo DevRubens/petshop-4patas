@@ -81,7 +81,7 @@ export default function Login() {
           <button
             className="login-btn admin"
             type="button"
-            onClick={() => nav("/admin")}
+            onClick={() => nav("/admin/login")}
             title="Acesso do administrador"
           >
             Acesso do administrador

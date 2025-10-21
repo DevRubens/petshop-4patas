@@ -1,27 +1,22 @@
-import Card from '../components/Card'
-
 export default function Home() {
   return (
-    <div className="max-w-6xl mx-auto p-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <Card className="md:col-span-2">
-        <h2 className="text-lg font-semibold mb-2">Bem-vindo(a)!</h2>
-        <p className="text-gray-600">Esta é a tela inicial do Petshop 4 Patas. Personalize widgets e atalhos aqui.</p>
-        <img src="/Tela Inicial.png" alt="Tela Inicial" className="mt-3 rounded-xl border max-h-64 object-cover" onError={(e)=>{(e.target as HTMLImageElement).style.display='none'}}/>
-      </Card>
+    <div className="flex h-full min-h-[60vh] flex-col items-center justify-center gap-6 text-center">
+      <div className="rounded-[48px] bg-white/70 px-10 py-12 shadow-2xl shadow-[#b8d1c6]/50 backdrop-blur-sm sm:px-16 sm:py-16">
+        <img
+          src="/logo-4patas.png"
+          alt="Petshop 4 Patas"
+          className="mx-auto w-[220px] max-w-full sm:w-[280px]"
+          draggable={false}
+        />
+      </div>
 
-      <Card>
-        <h3 className="font-semibold mb-2">Atalhos</h3>
-        <ul className="text-sm list-disc pl-5 space-y-1">
-          <li>Nova venda</li>
-          <li>Cadastro de produtos</li>
-          <li>Relatórios</li>
-        </ul>
-      </Card>
-
-      <Card className="md:col-span-2">
-        <h3 className="font-semibold mb-2">Avisos</h3>
-        <p className="text-sm text-gray-600">Coloque aqui avisos e notificações para os atendentes.</p>
-      </Card>
+      <div className="max-w-2xl text-sm text-[#4f6c5c]">
+        <p>
+          Bem-vindo ao painel do <strong>Petshop 4 Patas</strong>. Utilize o menu ao lado
+          para iniciar vendas, cadastrar novos colaboradores e acompanhar o desempenho
+          da loja.
+        </p>
+      </div>
     </div>
-  )
+  );
 }

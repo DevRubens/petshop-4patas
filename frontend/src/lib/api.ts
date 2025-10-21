@@ -41,8 +41,33 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+api.interceptors.response.use(
+  (resp) => resp,
+  (err) => {
+    if (err?.response?.status === 401) {
+      setToken(undefined);
+      try {
+        if (typeof window !== "undefined") {
+          window.location.href = "/login";
+        }
+      } catch {}
+    }
+    return Promise.reject(err);
+  }
+);
+
 if (import.meta.env.DEV) {
   console.log("[API] baseURL =", baseURL);
 }
 
 export default api;
+
+export async function uploadFile(file: File, folder?: string): Promise<string> {
+  const form = new FormData();
+  form.append("file", file);
+  if (folder) form.append("folder", folder);
+  const { data } = await api.post("/uploads", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data?.url as string;
+}
