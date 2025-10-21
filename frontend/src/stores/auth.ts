@@ -39,10 +39,10 @@ export const useAuthStore = create<AuthState>((set) => ({
     try {
       const url = asAdmin ? "/auth/admin/login" : "/auth/funcionario/login";
       const { data } = await api.post(url, { email, senha: password });
-      const token: string = data?.token;
+      const token: string | undefined = data?.token;
       const user = data?.user;
 
-      if (!token) return { ok: false, reason: "no-token" };
+      if (!token || !user) return { ok: false, reason: "no-token" };
 
       setToken(token);
       localStorage.setItem("auth_user", JSON.stringify(user));
